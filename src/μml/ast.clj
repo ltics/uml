@@ -76,6 +76,6 @@
     (Equal e1 e2) (Equal (subst env e1) (subst env e2))
     (Less e1 e2) (Less (subst env e1) (subst env e2))
     (If p c a) (If (subst env p) (subst env c) (subst env a))
-    (Fun fn an at rt b) (let [new-env (dissoc env fn an)]
-                          (Fun fn an at rt (subst new-env b)))
+    (Fun fn an at rt b) (let [env' (dissoc env fn an)]
+                          (Fun fn an at rt (subst env' b)))
     (Apply e1 e2) (Apply (subst env e1) (subst env e2))))
