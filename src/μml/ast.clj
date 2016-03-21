@@ -29,7 +29,7 @@
     IntT "int"
     BoolT "bool"
     (ArrowT ltype rtype) (match ltype
-                           (ArrowT l r) (format "(%s) -> %s"
+                           (ArrowT _) (format "(%s) -> %s"
                                                 (string-of-type ltype)
                                                 (string-of-type rtype))
                            :else (format "%s -> %s"
