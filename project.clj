@@ -6,6 +6,6 @@
                  [acolfut "0.3.3"]
                  [zjhmale/adt "0.1.0"]]
   :plugins [[lein-colortest "0.3.0"]]
-  :main ^:skip-aot μml.core
+  :main ^:skip-aot μml.μml
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}})

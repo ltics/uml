@@ -19,8 +19,8 @@
           expr2 (Fun "add" "x" IntT BoolT (Equal (Var "x") (Int 3)))
           expr3 (Apply (Fun "add" "x" IntT BoolT (Equal (Var "x") (Int 3))) (Int 1))]
       (is= (string-of-expr expr1) "(1 * 3)")
-      (is= (string-of-expr expr2) "(fun add (x: int): bool is (x == 3))")
-      (is= (string-of-expr expr3) "((fun add (x: int): bool is (x == 3)) 1)")))
+      (is= (string-of-expr expr2) "(ƒ add (x: int): bool is (x == 3))")
+      (is= (string-of-expr expr3) "((ƒ add (x: int): bool is (x == 3)) 1)")))
   (testing "substitution free variable"
     (let [env {"x" (Int 3) "y" (Int 1) "add" (Bool true)}
           expr1 (Var "x")

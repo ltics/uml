@@ -54,7 +54,7 @@
                          (string-of-expr p)
                          (string-of-expr c)
                          (string-of-expr a))
-      (Fun fn an at rt b) (format "(fun %s (%s: %s): %s is %s)"
+      (Fun fn an at rt b) (format "(ƒ %s (%s: %s): %s is %s)"
                                   fn
                                   an
                                   (string-of-type at)
