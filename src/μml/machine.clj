@@ -1,5 +1,6 @@
 (ns μml.machine
-  (require [adt.sweet :refer :all])
+  (require [adt.sweet :refer :all]
+           [μml.util :refer :all])
   (:refer-clojure :exclude [pop]))
 
 (def throw-exp #(throw (Exception. %)))
@@ -8,7 +9,7 @@
 (defadt ::mvalue
   (IntM value)
   (BoolM value)
-  (ClosureM name frame env))
+  (ClosureM arg-name frame env))
 
 ;; machine instructions
 (defadt ::instruction
@@ -61,7 +62,7 @@
   (match stack
     EmptyStack (throw-exp "empty stack")
     (MValues mvalues) (let [[head & tail] mvalues]
-                        [head tail])))
+                        [head (vec tail)])))
 
 (defn pop-bool
   [stack]
@@ -70,7 +71,7 @@
       EmptyStack (throw-exp)
       (MValues mvalues) (let [[head & tail] mvalues]
                           (match head
-                            (BoolM v) [head tail]
+                            (BoolM v) [v (vec tail)]
                             :else (throw-exp))))))
 
 (defn pop-app
@@ -80,10 +81,17 @@
       EmptyStack (throw-exp)
       (MValues mvalues) (let [[v closure & t] mvalues]
                           (match closure
-                            (ClosureT fn an e) [fn an e v t]
+                            (ClosureM an frame env) [an frame env v (vec t)]
                             :else (throw-exp))))))
 
 ;; arith operations take their arguments from a stack and put the result back onto the stack.
+
+(defn put-top
+  "put back on top of a stack"
+  [h t]
+  (-> h
+      (cons t)
+      vec))
 
 (defn arith-op
   [mvalue op op-name]
@@ -94,8 +102,8 @@
         (MValues mvalues) (let [[x y & t] mvalues]
                             (match x
                               (mvalue v1) (match y
-                                          (mvalue v2) (cons (mvalue (op v1 v2)) t)
-                                          :else (throw-exp))
+                                            (mvalue v2) (put-top (mvalue (op v1 v2)) t)
+                                            :else (throw-exp))
                               :else (throw-exp)))))))
 
 (def mult (arith-op IntM * "mult"))
@@ -112,5 +120,29 @@
    The return value is a new state."
   [instruction frames stack envs]
   (match instruction
-    ;; arithmetic
-    MultI [frames (mult stack) envs]))
+    ;; arithmetic operators
+    MultI [frames (mult stack) envs]
+    AddI [frames (add stack) envs]
+    SubI [frames (sub stack) envs]
+    EqualI [frames (equal stack) envs]
+    LessI [frames (less stack) envs]
+    ;; push values onto stack
+    (VarI x) [frames (put-top (lookup x envs) stack) envs]
+    (IntI v) [frames (put-top (IntM v) stack) envs]
+    (BoolI v) [frames (put-top (BoolM v) stack) envs]
+    (ClosureI fn an frame) (match envs
+                             EmptyEnvrionment (throw-exp "no environment for a closure")
+                             (NameMValues pairs) (let [[env & _] envs]
+                                                   (letrec [c (ClosureM an
+                                                                        frame
+                                                                        (put-top {fn c} env))]
+                                                     [frames (put-top c stack) envs])))
+    ;; control instructions
+    (BranchI c a) (let [[b stack'] (pop-bool stack)]
+                    [(put-top (if b c a) frames) stack' envs])
+    CallI (let [[an frame env v stack'] (pop-app stack)]
+            [(put-top frame frames) stack' (put-top (put-top {an v} env) envs)])
+    PopEnvI (match envs
+              EmptyEnvrionment (throw-exp "no environment to pop")
+              (NameMValues pairs) (let [[_ & envs'] envs]
+                                    [frames stack envs']))))
