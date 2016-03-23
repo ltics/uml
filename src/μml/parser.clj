@@ -9,7 +9,8 @@
   [stream]
   (->> (antlr/parse parser stream)
        vec
-       (insta/transform {:file   (fn [& exprs] (vec exprs))
+       (insta/transform {:file   (fn [stat _] stat)
+                         :stat   (fn [& args] (vec args))
                          :expr   (fn [& args] (condp = (count args)
                                                 3 (let [expr1 (nth args 1)
                                                         expr0 (nth args 0)
@@ -21,8 +22,10 @@
                                                         (#{"*" "times"} expr1) (Times expr0 expr2)
                                                         (#{"+" "plus"} expr1) (Plus expr0 expr2)
                                                         (#{"-" "minus" expr1}) (Minus expr0 expr2)
+                                                        (= "=" expr1) (Equal expr0 expr2)
+                                                        (= "<" expr1) (Less expr0 expr2)
                                                         :else (throw (Exception. "invalid expression.")))))
                                                 1 (Int (first args))
                                                 (throw (Exception. "invalid expression."))))
-                         :number (fn [v] (Integer/parseInt v))})))
-
+                         :atom   identity
+                         :number #(Integer/parseInt %)})))

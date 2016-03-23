@@ -7,8 +7,8 @@
   (testing "build ast"
     (is= (parse "(1 * 2)")
          (parse "1 * 2")
-         [(Times (Int 1) (Int 2)) "<EOF>"])
+         [(Times (Int 1) (Int 2))])
     (is= (parse "1 + 2 * 3")
-         [(Plus (Int 1) (Times (Int 2) (Int 3))) "<EOF>"])
+         [(Plus (Int 1) (Times (Int 2) (Int 3)))])
     (is= (parse "(1 + 2) * 3")
-         [(Times (Plus (Int 1) (Int 2)) (Int 3)) "<EOF>"])))
+         [(Times (Plus (Int 1) (Int 2)) (Int 3))])))
