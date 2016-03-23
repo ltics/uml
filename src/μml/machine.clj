@@ -1,7 +1,7 @@
 (ns μml.machine
   (require [adt.sweet :refer :all]
            [μml.util :refer :all])
-  (:refer-clojure :exclude [pop]))
+  (:refer-clojure :exclude [pop loop]))
 
 (def throw-exp #(throw (Exception. %)))
 
@@ -90,6 +90,7 @@
   "put back on top of a stack"
   [h t]
   (-> h
+      vec
       (cons t)
       vec))
 
@@ -146,3 +147,18 @@
               EmptyEnvrionment (throw-exp "no environment to pop")
               (NameMValues pairs) (let [[_ & envs'] envs]
                                     [frames stack envs']))))
+
+(defn run
+  "execute the frame (a list of instructions) in the specific environment."
+  [frame env]
+  (letrec [loop (fn [frames stack envs]
+                  (if (and (empty? frames))
+                    (if (= (count stack) 1)
+                      (first stack)
+                      (throw-exp "illegal end of program"))
+                    (let [[frame & frames'] frames]
+                      (if-not (empty? frame)
+                        (let [[instruction & frame'] frame]
+                          (loop (exec instruction (put-top frame' frames') stack envs)))
+                        (loop frames' stack envs)))))]
+    (loop [frame] [] [env])))
