@@ -15,4 +15,6 @@
     (is= (parse "if true then 1 else 2")
          [(If (Bool true) (Int 1) (Int 2))])
     (is= (parse "if (3 < 1) then 1 else 2")
-         [(If (Less (Int 3) (Int 1)) (Int 1) (Int 2))])))
+         [(If (Less (Int 3) (Int 1)) (Int 1) (Int 2))])
+    (is= (parse "fun eq3 (x: int): bool is 3 = x")
+         [(Fun "eq3" "x" IntT BoolT (Equal (Int 3) (Var "x")))])))

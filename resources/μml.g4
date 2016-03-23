@@ -32,11 +32,14 @@ var: VAR;
 bool: TRUE | FALSE;
 int: INT;
 
-type: BOOLT
-    | INTT
+type: boolT
+    | intT
     | type ARROWT type
     | LPAREN type LPAREN
     ;
+
+intT: INTT;
+boolT: BOOLT;
 
 PLUS:  'plus'  | '+';
 MINUS: 'minus' | '-';
@@ -62,7 +65,7 @@ INTT: 'int';
 ARROWT: '->';
 
 INT: '-'? [0-9]+;
-VAR: [a-zA-Z]+;
+VAR: [0-9a-zA-Z]+;
 LPAREN: '(';
 RPAREN: ')';
 
