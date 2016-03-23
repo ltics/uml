@@ -24,15 +24,13 @@ expr: atom
     ;
 
 atom: var
-    | true
-    | false
-    | number
+    | bool
+    | int
     ;
 
 var: VAR;
-true: TRUE;
-false: FALSE;
-number: NUMBER;
+bool: TRUE | FALSE;
+int: INT;
 
 type: BOOLT
     | INTT
@@ -63,7 +61,7 @@ BOOLT: 'bool';
 INTT: 'int';
 ARROWT: '->';
 
-NUMBER: '-'? [0-9]+;
+INT: '-'? [0-9]+;
 VAR: [a-zA-Z]+;
 LPAREN: '(';
 RPAREN: ')';
