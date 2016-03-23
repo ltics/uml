@@ -110,4 +110,7 @@
    stack is just a stack, a list of machine values,
    envs is a list of environments,
    The return value is a new state."
-  [instruction frames stack envs])
+  [instruction frames stack envs]
+  (match instruction
+    ;; arithmetic
+    MultI [frames (mult stack) envs]))
