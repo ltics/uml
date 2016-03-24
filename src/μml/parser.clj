@@ -1,6 +1,7 @@
 (ns μml.parser
   (require [clj-antlr.core :as antlr]
            [instaparse.core :as insta]
+           [adt.sweet :refer :all]
            [μml.ast :refer :all]))
 
 (def parser (antlr/parser "resources/μml.g4"))
@@ -10,7 +11,16 @@
   (->> (antlr/parse parser stream)
        vec
        (insta/transform {:file  (fn [stat _] stat)
-                         :stat  (fn [& args] (vec args))
+                         :stat  (fn [& args]
+                                  (as-> (first args) $
+                                        (match $
+                                          (Def _ ) $
+                                          :else (Expr $))
+                                        (cons $ (drop 1 args))
+                                        (vec $)))
+                         :def   (fn [& args]
+                                  (let [[_ name _ expr] args]
+                                    (Def name expr)))
                          :expr  (fn [& args] (condp = (count args)
                                                ;; function
                                                11 (let [[_ fun-name _ arg-name _ arg-type _ _ return-type _ body] args]
