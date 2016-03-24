@@ -1,13 +1,13 @@
 grammar μml;
 
-file: stat EOF;
+file: top EOF;
 
-stat: def
-    | def SEMICOLON2
-    | expr
-    | expr SEMICOLON2
-    | def SEMICOLON2 stat
-    | expr SEMICOLON2 stat;
+top: def
+   | def SEMICOLON2
+   | expr
+   | expr SEMICOLON2
+   | def SEMICOLON2 top
+   | expr SEMICOLON2 top;
 
 def: LET VAR EQUAL expr;
 

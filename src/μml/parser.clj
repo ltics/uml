@@ -11,10 +11,10 @@
   (->> (antlr/parse parser stream)
        vec
        (insta/transform {:file  (fn [stat _] stat)
-                         :stat  (fn [& args]
+                         :top   (fn [& args]
                                   (as-> (first args) $
                                         (match $
-                                          (Def _ ) $
+                                          (Def _) $
                                           :else (Expr $))
                                         (cons $ (drop 1 args))
                                         (vec $)))
