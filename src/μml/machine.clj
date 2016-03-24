@@ -90,7 +90,6 @@
   "put back on top of a stack"
   [h t]
   (-> h
-      vec
       (cons t)
       vec))
 
@@ -159,6 +158,6 @@
                     (let [[frame & frames'] frames]
                       (if-not (empty? frame)
                         (let [[instruction & frame'] frame]
-                          (loop (exec instruction (put-top frame' frames') stack envs)))
+                          (loop (exec instruction (put-top (vec frame') frames') stack envs)))
                         (loop frames' stack envs)))))]
     (loop [frame] [] [env])))
