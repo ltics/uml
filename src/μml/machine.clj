@@ -1,6 +1,6 @@
 (ns μml.machine
   (require [adt.sweet :refer :all]
-           [μml.util :refer :all])
+           [letrec.sweet :refer :all])
   (:refer-clojure :exclude [pop loop]))
 
 (def throw-exp #(throw (Exception. %)))
